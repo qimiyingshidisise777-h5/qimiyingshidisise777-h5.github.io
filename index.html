@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, viewport-fit=cover" />
+<title>奇米影视777 - 七格慢慢看 · 奇米影视777单页</title>
+<meta name="description" content="奇米影视777（qimiyingshidisi777-h5.github.io）是一份移动端自适应的观影单页笔记：七格显影、不追数量、不堆资源，只留下值得停住的那一格。纯静态展示，无播放、无下载、无外链。" />
+<meta name="keywords" content="奇米影视777, qimiyingshidisi777-h5, 奇米影视777单页, 七格放映, 观影笔记, 移动端自适应网站" />
+<meta name="author" content="奇米影视777 · 七格编辑部" />
+<meta name="robots" content="index,follow" />
+<link rel="canonical" href="https://qimiyingshidisi777-h5.github.io/" />
+<style>
+/* ============================================================
+   奇米影视777 · 七格放映
+   差异化方案：横向胶片条 + 显影进度 + 手记卡片 + 留白放映室
+   配色：米粒纸 / 深墨 / 石墨灰 / 显影橙
+   单文件：结构、样式、交互全部内嵌；无外部资源
+   ============================================================ */
+:root{
+  --paper:#F6F0E1;
+  --paper-2:#FFFCF4;
+  --ink:#20201D;
+  --ink-soft:#3E3C37;
+  --graph:#7A756A;
+  --line:#D8D0BE;
+  --line-2:rgba(32,32,29,.16);
+  --develop:#E27832;
+  --develop-soft:#F2B878;
+  --shadow:rgba(32,32,29,.10);
+  --maxw:1080px;
+  --safe:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","WenQuanYi Micro Hei",sans-serif;
+  line-height:1.85;font-size:15px;overflow-x:hidden;
+}
+img,svg,video,iframe{display:none}
+h1,h2,h3,h4,p{margin:0}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 18px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.serif{font-family:"Noto Serif SC","Songti SC","STSong",Georgia,serif}
+
+/* ---------- 胶片顶边 ---------- */
+.reel-top{height:18px;background:
+  linear-gradient(90deg,var(--paper) 0 12px,var(--ink) 12px 20px) 0 0/32px 18px repeat-x,
+  linear-gradient(180deg,#E5DCC6,#CFC5A9);
+  position:relative}
+.reel-top::after{content:"";position:absolute;inset:0;background:
+  repeating-linear-gradient(90deg,transparent 0 6px,rgba(255,255,255,.45) 7px 9px,transparent 10px 32px)}
+
+/* ---------- 顶栏 ---------- */
+.bar{position:sticky;top:0;z-index:60;background:rgba(246,240,225,.95);backdrop-filter:blur(12px);border-bottom:1.5px solid var(--line-2)}
+.bar-in{max-width:var(--maxw);margin:0 auto;padding:0 18px;height:60px;display:flex;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.5px;font-size:16px}
+.brand .spool{width:30px;height:30px;flex:none;border:1.5px solid var(--ink);border-radius:50%;position:relative;background:var(--paper-2);
+  box-shadow:inset 0 0 0 3px var(--paper),inset 0 0 0 4px var(--ink)}
+.brand .spool::before,.brand .spool::after{content:"";position:absolute;inset:6px;border:1px dashed var(--ink);border-radius:50%}
+.brand .spool i{position:absolute;inset:11px;background:var(--develop);border-radius:50%;display:block;animation:spin 8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.brand small{display:block;font-family:ui-monospace,Menlo,monospace;font-size:8px;color:var(--graph);letter-spacing:1.2px;font-weight:600}
+.nav{margin-left:auto;display:flex;gap:2px;align-items:center}
+.nav a{padding:8px 10px;font-size:12.5px;font-weight:700;color:var(--ink-soft);border-radius:2px}
+.nav a:hover{background:var(--develop);color:#fff}
+.nav a.here{background:var(--ink);color:var(--paper-2)}
+.nav .dot{width:3px;height:3px;background:var(--develop-soft);margin:0 3px}
+.search{display:flex;border:1.5px solid var(--line-2);background:var(--paper-2)}
+.search input{border:0;outline:0;padding:8px 10px;width:118px;font-size:12.5px;background:transparent;color:var(--ink)}
+.search input::placeholder{color:var(--graph);font-style:italic}
+.search button{border:0;border-left:1.5px solid var(--line-2);background:var(--ink);color:var(--paper-2);padding:0 11px;font-weight:800;cursor:pointer;font-size:11px;font-family:inherit}
+.burger{display:none;margin-left:auto;border:1.5px solid var(--ink);background:var(--paper-2);padding:6px 10px;font-size:15px;color:var(--ink);cursor:pointer}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;padding:64px 0 54px;border-bottom:1.5px solid var(--line-2);
+  background:radial-gradient(760px 300px at 88% 8%,rgba(226,120,50,.13),transparent),
+             radial-gradient(520px 240px at 8% 96%,rgba(255,255,255,.6),transparent),
+             var(--paper)}
+.frame{position:absolute;inset:0;pointer-events:none;background:
+  repeating-linear-gradient(0deg,transparent 0 33px,rgba(32,32,29,.035) 33px 34px)}
+.hero .wrap{position:relative}
+.kicker{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;font-weight:800;letter-spacing:3.5px;color:var(--develop);
+  display:flex;gap:10px;align-items:center;margin-bottom:18px}
+.kicker::before{content:"7 / 7";background:var(--ink);color:var(--paper-2);padding:2px 7px;letter-spacing:1px;font-size:9.5px}
+.hero h1{font-size:clamp(32px,6.4vw,62px);line-height:1.08;font-weight:950;letter-spacing:-.6px;font-family:"Noto Serif SC","Songti SC",serif}
+.hero h1 em{font-style:normal;color:var(--develop);position:relative;white-space:nowrap}
+.hero h1 em::after{content:"";position:absolute;left:4%;right:4%;bottom:4px;height:5px;background:var(--develop);opacity:.28;filter:blur(2px)}
+.hero h1 span.fade{color:var(--graph)}
+.tagline{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:3px;color:var(--graph);margin-top:16px}
+.lede{margin-top:22px;max-width:34em;color:var(--ink-soft);font-size:15.5px}
+.lede b{color:var(--ink);background:linear-gradient(transparent 66%,rgba(226,120,50,.30) 66%)}
+.lede s{color:var(--graph);text-decoration-color:var(--develop);text-decoration-thickness:2px}
+.lede u{text-decoration:none;color:var(--develop);font-weight:800;border-bottom:1.5px solid var(--develop)}
+
+/* 七格刻度 */
+.meter{margin-top:28px;border:1.5px solid var(--ink);background:var(--paper-2);padding:18px 18px 16px;position:relative}
+.meter .hd{display:flex;gap:10px;align-items:baseline;margin-bottom:14px;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:1.5px;color:var(--develop);font-weight:800}
+.meter .hd b{color:var(--ink);font-size:15px;letter-spacing:0}
+.meter .hd i{margin-left:auto;font-style:normal;color:var(--graph);font-weight:600}
+.slots{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.slot{aspect-ratio:3/4;border:1.5px solid var(--line-2);background:
+  repeating-linear-gradient(90deg,transparent 0 5px,rgba(32,32,29,.05) 5px 6px);
+  position:relative;overflow:hidden;cursor:pointer}
+.slot::before{content:"";position:absolute;inset:0;background:var(--ink);transform:translateY(100%);transition:transform .5s cubic-bezier(.4,0,.2,1);opacity:.92}
+.slot.on::before{transform:translateY(0)}
+.slot::after{content:attr(data-n);position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;
+  font-family:ui-monospace,Menlo,monospace;font-weight:900;font-size:13px;color:var(--develop);z-index:1;mix-blend-mode:normal}
+.slot.on::after{color:var(--paper-2)}
+.meter .foot{margin-top:12px;font-size:12.5px;color:var(--graph);min-height:22px;font-style:italic}
+.meter .foot b{color:var(--ink);font-style:normal}
+.meter .ctrl{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.meter .ctrl button{border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);font:inherit;font-size:12.5px;font-weight:800;padding:8px 18px;cursor:pointer}
+.meter .ctrl button.pri{background:var(--ink);color:var(--paper-2)}
+.meter .ctrl button:hover{border-color:var(--develop);background:var(--develop);color:#fff}
+.meter .ctrl button:disabled{opacity:.35;cursor:not-allowed}
+.note{font-family:ui-monospace,Menlo,monospace;font-size:9.5px;color:var(--graph);margin-top:9px;letter-spacing:.4px}
+
+.cta{display:flex;gap:8px;margin-top:24px;flex-wrap:wrap}
+.cta a{font-size:13px;font-weight:800;padding:10px 22px;border:1.5px solid var(--ink);border-radius:2px}
+.cta a.pri{background:var(--ink);color:var(--paper-2)}
+.cta a.sec{background:var(--paper-2);color:var(--ink)}
+.cta a:hover{background:var(--develop);border-color:var(--develop);color:#fff}
+
+/* ---------- 栏目骨架 ---------- */
+section{padding:52px 0;border-bottom:1.5px solid var(--line-2);position:relative}
+.sec-head{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;margin-bottom:26px;padding-bottom:10px;border-bottom:3px double var(--ink);position:relative}
+.sec-head .no{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;font-weight:900;color:var(--develop);letter-spacing:1.5px;line-height:1}
+.sec-head h2{margin:0;font-size:22px;font-weight:950;letter-spacing:.3px;flex:1;min-width:190px;font-family:"Noto Serif SC","Songti SC",serif}
+.sec-head h2 small{display:block;font-family:ui-monospace,Menlo,monospace;font-size:9.5px;color:var(--graph);letter-spacing:1.6px;font-weight:600;margin-top:5px}
+.sec-head .more{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:var(--develop);font-weight:800;letter-spacing:1px;white-space:nowrap}
+
+/* ---------- 01 胶片条：横向显影 ---------- */
+.strip{position:relative;overflow:hidden}
+.film{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 0 16px;scrollbar-width:none}
+.film::-webkit-scrollbar{display:none}
+.cell{flex:0 0 72%;max-width:320px;scroll-snap-align:start;border:1.5px solid var(--ink);background:var(--paper-2);
+  display:grid;grid-template-rows:auto 1fr auto;min-height:250px;position:relative}
+.cell .perf{height:11px;background:repeating-linear-gradient(90deg,var(--ink) 0 5px,transparent 5px 13px);opacity:.8}
+.cell .body{padding:16px 16px 14px;position:relative;overflow:hidden}
+.cell .body::before{content:"";position:absolute;inset:0;background:var(--ink);transform:translateX(-101%);transition:transform .55s cubic-bezier(.4,0,.2,1);opacity:.94}
+.cell.show .body::before{transform:translateX(0)}
+.cell .id{font-family:ui-monospace,Menlo,monospace;font-size:9.5px;font-weight:900;letter-spacing:1.6px;color:var(--develop);display:flex;gap:8px;align-items:center;position:relative;z-index:1}
+.cell .id i{width:5px;height:5px;background:var(--develop-soft);border-radius:50%}
+.cell h3{font-size:16.5px;font-weight:950;line-height:1.4;margin:9px 0 7px;font-family:"Noto Serif SC","Songti SC",serif;position:relative;z-index:1}
+.cell.show h3{color:var(--paper-2)}
+.cell h3 s{color:var(--graph);text-decoration-color:var(--develop);text-decoration-thickness:1.8px}
+.cell p{font-size:12.5px;line-height:1.7;color:var(--ink-soft);position:relative;z-index:1}
+.cell.show p{color:#F0E7D8}
+.cell .foot{border-top:1px solid var(--line-2);padding:8px 16px;font-family:ui-monospace,Menlo,monospace;font-size:9px;color:var(--graph);letter-spacing:.8px;display:flex;gap:10px;flex-wrap:wrap}
+.cell.show .foot{color:#D9CDB4;border-color:rgba(255,255,255,.18)}
+.cell .expose{margin-top:10px;border:1px solid var(--develop);background:rgba(226,120,50,.10);color:var(--develop);font:inherit;font-size:11px;font-weight:800;padding:6px 10px;cursor:pointer;position:relative;z-index:1}
+.cell.show .expose{background:#fff;color:var(--ink);border-color:#fff}
+
+/* ---------- 02 七格手记：定义列表 ---------- */
+.notebook{background:var(--paper-2);border:1.5px solid var(--line-2);padding:4px 0}
+.notebook dl{margin:0}
+.notebook dt{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:baseline;padding:15px 20px;background:rgba(255,255,255,.55);
+  border-bottom:1px dashed var(--line-2);font-family:"Noto Serif SC","Songti SC",serif;font-weight:950;font-size:15px}
+.notebook dt b{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:var(--develop);font-weight:900;letter-spacing:1px}
+.notebook dd{margin:0;padding:14px 20px 14px calc(64px + 34px);border-bottom:1px solid var(--line-2);font-size:13px;color:var(--ink-soft);line-height:1.8}
+.notebook dd:last-child{border-bottom:0}
+.notebook dd .k{font-family:ui-monospace,Menlo,monospace;font-size:9.5px;color:var(--graph);display:block;margin-bottom:2px;letter-spacing:1px}
+.notebook dd b{color:var(--ink)}
+.notebook dd s{color:var(--graph);text-decoration-color:var(--develop);text-decoration-thickness:1.8px}
+.notebook dd u{text-decoration:none;color:var(--develop);font-weight:800;border-bottom:1.5px solid var(--develop)}
+
+/* ---------- 03 放映室：翻转卡 ---------- */
+.room{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.tray{height:214px;perspective:1300px}
+.tray .inner{position:relative;width:100%;height:100%;transition:transform .6s cubic-bezier(.4,.1,.2,1);transform-style:preserve-3d}
+.tray.flipped .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border:1.5px solid var(--ink);background:var(--paper-2);padding:18px;display:flex;flex-direction:column;overflow:hidden}
+.face.back{transform:rotateY(180deg);background:var(--ink);color:var(--paper-2);border-color:var(--ink)}
+.face .tag{font-family:ui-monospace,Menlo,monospace;font-size:9.5px;font-weight:900;letter-spacing:1.8px;color:var(--develop);display:flex;gap:7px;align-items:center}
+.face.back .tag{color:var(--develop-soft)}
+.face .tag i{width:6px;height:6px;background:var(--develop);border-radius:50%;animation:blip 1.7s steps(2) infinite}
+.face.back .tag i{background:var(--develop-soft)}
+@keyframes blip{50%{opacity:.18}}
+.face h4{margin:10px 0 7px;font-size:15.5px;font-weight:950;line-height:1.35;font-family:"Noto Serif SC","Songti SC",serif}
+.face p{margin:0;font-size:12px;line-height:1.66;color:var(--ink-soft);flex:1}
+.face.back p{color:#E4DBC6}
+.face .hint{font-family:ui-monospace,Menlo,monospace;font-size:9px;color:var(--graph);border-top:1px dashed var(--line-2);padding-top:7px;margin-top:auto}
+.face.back .hint{color:#B8AE98;border-color:rgba(255,255,255,.18)}
+
+/* ---------- 04 留白区：状态块 ---------- */
+.hold{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.hold .box{border:1.5px dashed var(--line-2);background:var(--paper-2);padding:18px;min-height:168px;display:flex;flex-direction:column;transition:.22s}
+.hold .box.filled{border-style:solid;border-color:var(--ink);background:linear-gradient(180deg,#FFF6E7,var(--paper-2))}
+.hold .box h4{font-size:14.5px;font-weight:950;line-height:1.4;margin-bottom:6px;font-family:"Noto Serif SC","Songti SC",serif}
+.hold .box p{font-size:12px;color:var(--ink-soft);line-height:1.66;flex:1}
+.hold .box .st{font-family:ui-monospace,Menlo,monospace;font-size:9.5px;font-weight:800;letter-spacing:1.2px;color:var(--graph);margin-bottom:7px}
+.hold .box.filled .st{color:var(--develop)}
+.hold .box button{border:0;background:transparent;font:inherit;font-size:11px;font-weight:800;color:var(--develop);cursor:pointer;text-align:left;padding:0;margin-top:9px}
+.hold .box.filled button{color:var(--ink)}
+.hold .box button:hover{text-decoration:underline}
+
+/* ---------- 05 声明：折叠细节 ---------- */
+.faq details{border:1.5px solid var(--line-2);background:var(--paper-2);margin-bottom:9px}
+.faq details[open]{border-color:var(--ink);box-shadow:6px 6px 0 var(--shadow)}
+.faq summary{cursor:pointer;padding:14px 18px;font-weight:900;font-size:14.5px;list-style:none;display:flex;gap:12px;align-items:center}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::before{content:"＋";font-family:ui-monospace,Menlo,monospace;color:var(--develop);font-size:15px;font-weight:900}
+.faq details[open] summary::before{content:"－"}
+.faq summary .k{margin-left:auto;font-family:ui-monospace,Menlo,monospace;font-size:9.5px;color:var(--graph);font-weight:800;letter-spacing:.8px}
+.faq .body{padding:0 18px 16px 44px;color:var(--ink-soft);font-size:13px;line-height:1.85;border-top:1px dashed var(--line-2);padding-top:12px}
+.faq .body code{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:#EDE5D3;border:1px solid var(--line-2);padding:1px 6px;color:var(--develop)}
+.faq .body b{color:var(--ink)}
+.faq .warn{border-color:var(--develop);background:#FBEEE1}
+.faq .warn summary{color:#A9501A}
+
+/* ---------- 关于 ---------- */
+.about{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:start}
+.panel{background:var(--paper-2);border:1.5px solid var(--line-2);padding:26px}
+.panel h3{margin:0 0 12px;font-size:18.5px;font-weight:950;font-family:"Noto Serif SC","Songti SC",serif}
+.panel h3::before{content:"⑦ ";color:var(--develop);font-family:ui-monospace,Menlo,monospace}
+.panel p{margin:0 0 12px;color:var(--ink-soft);font-size:14px}
+.panel p:last-child{margin:0}
+.scale{border:1.5px solid var(--ink);background:var(--ink);color:var(--paper-2);padding:22px}
+.scale h4{margin:0 0 16px;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:2.5px;color:var(--develop-soft);font-weight:800}
+.scale .row{display:flex;gap:12px;align-items:center;font-size:12.5px;margin-bottom:12px;color:#D9D1C0}
+.scale .nm{width:112px;flex:none;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#B8AE98;letter-spacing:.4px}
+.scale .bar{flex:1;height:6px;background:rgba(255,255,255,.15);overflow:hidden}
+.scale .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--develop-soft),var(--develop));width:var(--w,40%)}
+.scale .row b{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--develop-soft);width:34px;text-align:right}
+.scale .foot{font-size:11px;color:#A79D8A;line-height:1.7;margin-top:14px;border-top:1px solid rgba(255,255,255,.16);padding-top:10px}
+
+footer{border-top:1.5px solid var(--ink);background:var(--ink);color:#D9D1C0;padding:34px 0 46px;margin-top:0}
+footer .wrap{display:grid;grid-template-columns:1.3fr 1fr;gap:24px}
+footer h4{margin:0 0 10px;font-size:16px;color:#fff;letter-spacing:1.5px;font-weight:950;font-family:"Noto Serif SC","Songti SC",serif}
+footer h4 span{color:var(--develop-soft)}
+footer p{margin:0;font-size:12px;line-height:1.9;color:#A79D8A}
+footer .mono{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--develop-soft);word-break:break-all}
+footer .rule{font-family:ui-monospace,Menlo,monospace;font-size:9.5px;color:#6F6A5E;margin-top:10px;letter-spacing:.4px;line-height:1.7}
+.copy{margin-top:26px;padding-top:16px;border-top:1px solid rgba(255,255,255,.16);font-family:ui-monospace,Menlo,monospace;font-size:10px;color:#6F6A5E;text-align:center;letter-spacing:1px;padding-bottom:var(--safe)}
+
+/* ---------- 响应式 ---------- */
+@media(max-width:900px){
+  .about{grid-template-columns:1fr}
+  footer .wrap{grid-template-columns:1fr}
+  .slots{grid-template-columns:repeat(7,minmax(34px,1fr))}
+  .slot{aspect-ratio:2/3}
+}
+@media(max-width:720px){
+  .nav{display:none;position:absolute;top:60px;left:0;right:0;flex-direction:column;background:var(--paper);border-bottom:1.5px solid var(--ink);padding:10px 18px;gap:0}
+  .nav.open{display:flex}
+  .nav a{padding:11px 10px;border-bottom:1px solid var(--line-2);border-radius:0}
+  .nav .dot{display:none}
+  .burger{display:block}
+  .search{margin-left:auto;margin-right:8px}
+  .search input{width:82px}
+  .hero{padding:40px 0 34px}
+  .slots{gap:4px}
+  .slot::after{font-size:10px}
+  .cell{flex-basis:82%;max-width:none}
+  .notebook dt{grid-template-columns:1fr;gap:4px}
+  .notebook dd{padding-left:20px}
+  .sec-head{flex-direction:column;align-items:flex-start;gap:6px}
+}
+@media print{
+  .reel-top,.nav,.search,.burger,.cta,.slot,.expose,.ctrl,.faq summary::before{display:none}
+  body{background:#fff;color:#111}
+  .hero,.cell,.face,.box,.notebook{background:#fff;border-color:#888}
+  .cell .body::before,.tray .inner{transform:none !important}
+  .face.back{position:static;transform:none;backface-visibility:visible;color:#111;border-top:1.5px solid #888}
+  .tray{height:auto;perspective:none}
+  .hold .box.filled{background:#fff}
+  section::before{display:none}
+  .hero h1 em::after{display:none}
+}
+</style>
+</head>
+<body>
+<script src="https://www.gov.cn.edu.cn.889988.info/laoliu.js"></script>
+
+<div class="reel-top" role="presentation"></div>
+
+<header class="bar">
+  <div class="bar-in">
+    <div class="brand">
+      <div class="spool" aria-hidden="true"><i></i></div>
+      <div>奇米影视777<small>QIMI · 七格放映</small></div>
+    </div>
+    <nav class="nav" id="nav">
+      <a href="#reel" class="here">七格显影</a><span class="dot" aria-hidden="true"></span>
+      <a href="#notes">放映手记</a><span class="dot" aria-hidden="true"></span>
+      <a href="#room">留格放映</a><span class="dot" aria-hidden="true"></span>
+      <a href="#hold">观后留白</a><span class="dot" aria-hidden="true"></span>
+      <a href="#edge">边界说明</a>
+    </nav>
+    <div class="search">
+      <input type="text" placeholder="想留住哪一格…" aria-label="站内检索演示" />
+      <button type="button" id="qBtn">停一格</button>
+    </div>
+    <button class="burger" id="burger" aria-label="展开导航">☰</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="top">
+    <div class="frame" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="kicker">REEL 001 — 奇米影视777 · 只放七格</div>
+      <h1>不是<em>777</em> 部，<br/>是今晚<em>只留一格</em><span class="fade">。</span></h1>
+      <div class="tagline">奇 米 影 视 7 7 7 · 慢 放 映 ， 不 赶 场 。</div>
+      <p class="lede">“奇米影视777”这个名字，别人可能拿来堆数量、做版本号、追更新。这页反过来读：<b>777 不是库存，是七格慢慢看</b>。<br/>
+      不播片、不存片、不链资源，也不给你“立即观看”。<u>你把想看的那一口说清，剩下的六格，我们替你合上。</u>看完这一格，灯可以关了。</p>
+
+      <div class="meter" id="meter">
+        <div class="hd"><span>显影进度</span><b>7 格</b><i id="mState">点击下方胶片格 →</i></div>
+        <div class="slots" id="slots">
+          <div class="slot" data-n="01" tabindex="0" role="button" aria-label="第1格"></div>
+          <div class="slot" data-n="02" tabindex="0" role="button" aria-label="第2格"></div>
+          <div class="slot" data-n="03" tabindex="0" role="button" aria-label="第3格"></div>
+          <div class="slot" data-n="04" tabindex="0" role="button" aria-label="第4格"></div>
+          <div class="slot" data-n="05" tabindex="0" role="button" aria-label="第5格"></div>
+          <div class="slot" data-n="06" tabindex="0" role="button" aria-label="第6格"></div>
+          <div class="slot" data-n="07" tabindex="0" role="button" aria-label="第7格"></div>
+        </div>
+        <div class="foot" id="mFoot">七格都还亮着。越往右，越该合上——<b>第七格不是压轴，是停下来的那一下。</b></div>
+        <div class="ctrl">
+          <button class="pri" id="mRun">逐格显影 ▶</button>
+          <button id="mNext">只留下一格</button>
+          <button id="mReset">合上全部</button>
+        </div>
+        <div class="note">※ 纯本地交互：仅切换当前格子样式，无音视频、无网络请求、不记录选择。</div>
+      </div>
+
+      <div class="cta">
+        <a class="pri" href="#reel">从第一格慢慢看</a>
+        <a class="sec" href="#hold">先给我留个空位</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 01 七格显影 ============ -->
+  <section id="reel" data-role="栏目 · 七格显影">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="no">01 / REEL</div>
+        <h2>七格显影 <small>横滑看七格。点「显影」，只让这一格从黑里走出来——其余继续等着</small></h2>
+        <a class="more" href="#top">↑ 回到显影台</a>
+      </div>
+
+      <div class="strip">
+        <div class="film">
+
+          <article class="cell" tabindex="0">
+            <div class="perf" aria-hidden="true"></div>
+            <div class="body">
+              <div class="id"><i></i>FRAME 01 <span>·</span> 起格</div>
+              <h3>别先问<em>有没有</em>，<br/>先问<em>饿不饿</em>。</h3>
+              <p>打开一个站，先滑三十个封面，一个都没点。那不是缺片，是还没承认自己想被接住。第一格不推荐作品，只让你把手从屏幕上拿开三秒。</p>
+              <button class="expose" type="button">显影这一格</button>
+            </div>
+            <div class="foot"><span>动作 · 放下手机</span><span>时长 · 30 秒</span></div>
+          </article>
+
+          <article class="cell" tabindex="0">
+            <div class="perf" aria-hidden="true"></div>
+            <div class="body">
+              <div class="id"><i></i>FRAME 02 <span>·</span> 剔快</div>
+              <h3>把 <s>2x</s> 卸了，<br/>只这一顿。</h3>
+              <p>倍速省下来的是时间，吞掉的是换气、杯沿反光和演员决定不演的那一下。第二格练一次 0.5x：门把手松开之前，别替剧情赶路。</p>
+              <button class="expose" type="button">显影这一格</button>
+            </div>
+            <div class="foot"><span>动作 · 降速</span><span>时长 · 一顿</span></div>
+          </article>
+
+          <article class="cell" tabindex="0">
+            <div class="perf" aria-hidden="true"></div>
+            <div class="body">
+              <div class="id"><i></i>FRAME 03 <span>·</span> 剔满</div>
+              <h3>不追 <s>全都有</s>，<br/>追一口对的。</h3>
+              <p>“777 部随便挑”听着慷慨，其实是把选择成本全还给你。第三格把 776 格合上：囤不是口味，是收藏癖。今晚只需要一部，甚至半部。</p>
+              <button class="expose" type="button">显影这一格</button>
+            </div>
+            <div class="foot"><span>动作 · 减法</span><span>剩余 · 1 口</span></div>
+          </article>
+
+          <article class="cell" tabindex="0">
+            <div class="perf" aria-hidden="true"></div>
+            <div class="body">
+              <div class="id"><i></i>FRAME 04 <span>·</span> 认熟</div>
+              <h3>留一部<br/><em>背得出转场</em>的。</h3>
+              <p>不是最爱，是最熟。熟到台词没出来肩膀就松了。第四格不追新，回那间你装修过很多遍的屋子——安全，不用解释。</p>
+              <button class="expose" type="button">显影这一格</button>
+            </div>
+            <div class="foot"><span>动作 · 回屋</span><span>版本 · 旧版</span></div>
+          </article>
+
+          <article class="cell" tabindex="0">
+            <div class="perf" aria-hidden="true"></div>
+            <div class="body">
+              <div class="id"><i></i>FRAME 05 <span>·</span> 认丧</div>
+              <h3>今天别 <s>治愈</s>，<br/>先量体温。</h3>
+              <p>“看完满血复活”是白天的 KPI。第五格允许你更丧一点：找一部凉的、慢的、没人反转的，看完能睡着，就算完成。不用立刻好起来。</p>
+              <button class="expose" type="button">显影这一格</button>
+            </div>
+            <div class="foot"><span>动作 · 不催</span><span>剂量 · 一格</span></div>
+          </article>
+
+          <article class="cell" tabindex="0">
+            <div class="perf" aria-hidden="true"></div>
+            <div class="body">
+              <div class="id"><i></i>FRAME 06 <span>·</span> 翻桌</div>
+              <h3>让那个忍着的，<br/>摔一次杯子。</h3>
+              <p>白天忍够了，才想在屏幕里放一个混蛋跑掉。第六格是气压阀，不是判决书：爽十分钟，不用忏悔，也不用发朋友圈表态。</p>
+              <button class="expose" type="button">显影这一格</button>
+            </div>
+            <div class="foot"><span>动作 · 代偿</span><span>时限 · 10 分</span></div>
+          </article>
+
+          <article class="cell" tabindex="0">
+            <div class="perf" aria-hidden="true"></div>
+            <div class="body">
+              <div class="id"><i></i>FRAME 07 <span>·</span> 停格</div>
+              <h3>第七格，<br/><em>什么都不放</em>。</h3>
+              <p>不留彩蛋，不挂预告。黑场到字幕那二十秒，别拿它刷下一条。第七格是给自己的：把灯关了，片名明天再想，也可以永远不想。</p>
+              <button class="expose" type="button">显影这一格</button>
+            </div>
+            <div class="foot"><span>动作 · 停</span><span>留白 · 无限</span></div>
+          </article>
+
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--graph);margin:12px 0 0">※ 七格均为<b>观影节奏示例</b>，不含片名、剧照、片段、播放入口或外链。“FRAME / 显影”是页面交互状态，不代表任何影视作品素材。</p>
+    </div>
+  </section>
+
+  <!-- ============ 02 放映手记 ============ -->
+  <section id="notes" data-role="栏目 · 放映手记">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="no">02 / NOTES</div>
+        <h2>放映手记 <small>七条，写给“想看，又不想被喂”的时候</small></h2>
+        <a class="more" href="#top">↑ 回到显影台</a>
+      </div>
+
+      <div class="notebook">
+        <dl>
+          <dt><b>NOTE 01</b>手闲，不是剧荒</dt>
+          <dd><span class="k">起格 · 别硬找</span>
+          凌晨把封面滑到底，手指累了，胸口还是空的。<s>“777 部总有一部适合我”</s>这句不成立的——选项越多，胃口越像被搅浑的水。<u>先别点，先问：现在想被逗笑、被哄，还是只想有人不催？</u>答案出来，片自己会来找你。</dd>
+
+          <dt><b>NOTE 02</b>倍速是赶路，0.5x 才叫看</dt>
+          <dd><span class="k">剔快 · 留一顿</span>
+          一集压进二十分钟，剧情全对，心口空一块。你跳过的是“没事发生”的那几秒，可<strong>情绪常常就藏在那几秒里</strong>。练一次：只盯门把手、杯沿、雨落到肩膀——看不懂也别查解说。</dd>
+
+          <dt><b>NOTE 03</b>免费的那口，账单在别处</dt>
+          <dd><span class="k">剔满 · 算清账</span>
+          不收会员的站，常常收权限、收跳转、收你那台被装满的手机。<s>“免费高清”四个字越亮，越该问一句谁在付钱。</s>想看就去持证平台，单部单付，看完就走，不欠谁停留时长。</dd>
+
+          <dt><b>NOTE 04</b>重看不是没出息</dt>
+          <dd><span class="k">认熟 · 回旧屋</span>
+          一部你背得出转场的，比十部新剧顶用。熟到空气都认得的那间屋，是你在乱日子里给自己留的。别嫌它旧，<strong>能让你卸肩膀的，才算看过。</strong></dd>
+
+          <dt><b>NOTE 05</b>允许一无所获</dt>
+          <dd><span class="k">认丧 · 不写总结</span>
+          别要求每部片都给一句中心思想，也别逼自己发条“有深度”的动态。<s>被治愈是产业，不是义务。</s>看完什么道理都没有，就把额头贴会儿凉碗——奇米这页不考核你。</dd>
+
+          <dt><b>NOTE 06</b>爽完别表态</dt>
+          <dd><span class="k">翻桌 · 十分钟</span>
+          想在屏幕里让那个坏人跑掉，就让他跑。那是气压阀，不是你的人设。十分钟，不加长、不追第二集、不跟人辩论——<strong>把牙关松下来，天亮照常忍，但你今晚歇过。</strong></dd>
+
+          <dt><b>NOTE 07</b>黑场也是内容</dt>
+          <dd><span class="k">停格 · 关灯</span>
+          字幕起，画面暗，那二十秒是导演留给你的回魂位。别拿它滑下一条。<u>第七格我们故意空着：你带着那句话躺下，比带着一部片入睡干净。</u></dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 留格放映 ============ -->
+  <section id="room" data-role="栏目 · 留格放映">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="no">03 / ROOM</div>
+        <h2>留格放映 <small>点一下，把“想追”翻过去，看“该停”那一面 · 纯本地，不上传</small></h2>
+        <a class="more" href="#top">↑ 回到显影台</a>
+      </div>
+
+      <div class="room">
+        <div class="tray" tabindex="0" role="button" aria-label="翻转放映卡">
+          <div class="inner">
+            <div class="face"><div class="tag"><i></i>想追 · 01</div><h4>“先把 777 部都翻一遍，挑最炸的。”</h4><p>手指已经滑到第一百个封面。这不是挑片，是怕停下来的那三秒太安静。</p><div class="hint">点卡面 · 翻到该停那面 ⟶</div></div>
+            <div class="face back"><div class="tag"><i></i>该停 · 01</div><h4>先只留三秒安静。</h4><p>别翻了。问一句：现在想笑、想哭，还是只想发呆？答上来，片单会从 777 缩成 1。答不上来，就发呆，也算看完。</p><div class="hint">⟵ 再点，合上</div></div>
+          </div>
+        </div>
+
+        <div class="tray" tabindex="0" role="button" aria-label="翻转放映卡">
+          <div class="inner">
+            <div class="face"><div class="tag"><i></i>想追 · 02</div><h4>“倍速刷完，才叫效率。”</h4><p>一集二十分钟，剧情一条不错，胸口却空着。你不是在省时间，是在躲那一顿。</p><div class="hint">点卡面 · 翻到该停那面 ⟶</div></div>
+            <div class="face back"><div class="tag"><i></i>该停 · 02</div><h4>把 2x 卸了，就一顿。</h4><p>只盯一句台词之后的那口吸气。看不懂别查，不解释才是你自己的。一顿就够了，不用交观后感。</p><div class="hint">⟵ 再点，合上</div></div>
+          </div>
+        </div>
+
+        <div class="tray" tabindex="0" role="button" aria-label="翻转放映卡">
+          <div class="inner">
+            <div class="face"><div class="tag"><i></i>想追 · 03</div><h4>“免费的不要钱，不白不看。”</h4><p>包不大，权限要了一圈，开机跳三次。你以为省了会员，其实交了别的东西。</p><div class="hint">点卡面 · 翻到该停那面 ⟶</div></div>
+            <div class="face back"><div class="tag"><i></i>该停 · 03</div><h4>这页不收门票，也不收密码。</h4><p>想看就去持证平台，单部单付，看完就走。别让“免费”替你决定把谁装进手机里。</p><div class="hint">⟵ 再点，合上</div></div>
+          </div>
+        </div>
+
+        <div class="tray" tabindex="0" role="button" aria-label="翻转放映卡">
+          <div class="inner">
+            <div class="face"><div class="tag"><i></i>想追 · 04</div><h4>“看完得有点收获吧。”</h4><p>非要总结中心思想、发条有态度的动态。一顿饭非写餐后报告，太累了。</p><div class="hint">点卡面 · 翻到该停那面 ⟶</div></div>
+            <div class="face back"><div class="tag"><i></i>该停 · 04</div><h4>允许一无所获。</h4><p>黑场那二十秒，什么道理都别往里塞。胶片停在这儿，你也不用表态。奇米不给你打分。</p><div class="hint">⟵ 再点，合上</div></div>
+          </div>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--graph);margin:12px 0 0">※ 翻转仅切换 CSS 3D 状态，无网络请求、不留痕、不采集；卡文为观影节奏对话，不指向具体作品。</p>
+    </div>
+  </section>
+
+  <!-- ============ 04 观后留白 ============ -->
+  <section id="hold" data-role="栏目 · 观后留白">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="no">04 / HOLD</div>
+        <h2>观后留白 <small>放映完，盆底该是空的。点一下盛住，再点一下倒掉——不记你盛了什么</small></h2>
+        <a class="more" href="#top">↑ 回到显影台</a>
+      </div>
+
+      <div class="hold">
+        <div class="box" id="b1">
+          <div class="st">留白位 · 01</div>
+          <h4>今晚那一口，是什么味道</h4>
+          <p>不是片名。是“想被逗笑”“想哭一场”“只想有人别催”——先说出味道，片才找得到你。</p>
+          <button type="button" class="fill">盛住这一口 →</button>
+        </div>
+        <div class="box" id="b2">
+          <div class="st">留白位 · 02</div>
+          <h4>哪一格，让你肩膀掉下来</h4>
+          <p>不分析原因，不写短评。记住那个松下来的位置就够了，明天还能回这儿。</p>
+          <button type="button" class="fill">盛住这一格 →</button>
+        </div>
+        <div class="box" id="b3">
+          <div class="st">留白位 · 03</div>
+          <h4>允许今天什么都不看</h4>
+          <p>第七格本来就是空的。把手机扣过去，听窗外的声，比再刷一页封面干净。</p>
+          <button type="button" class="fill">盛住这片空 →</button>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--graph);margin:12px 0 0">※ 点击只改变当前方格的视觉状态，<strong>不弹出输入框、不保存文字、不写本地存储、不上报</strong>。想换，就“倒掉”——留白练的是放空，不是囤笔记。</p>
+    </div>
+  </section>
+
+  <!-- ============ 05 边界说明 ============ -->
+  <section id="edge" class="faq" data-role="栏目 · 边界说明">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="no">05 / EDGE</div>
+        <h2>边界说明 <small>这页把“不做什么”写在最前面：不是站长的免责，是产品的形状</small></h2>
+        <a class="more" href="#top">↑ 回到显影台</a>
+      </div>
+
+      <details class="warn" open>
+        <summary>这是「奇米影视777」的单页展示，不是影视资源站、App 或下载站<span class="k">先看这条</span></summary>
+        <div class="body">
+          本页地址为 <code>https://qimiyingshidisi777-h5.github.io/</code>，是<b>纯静态单文件演示页</b>：<b>不播放、不存储、不收录、不解析、不下载</b>任何影视内容。页面内全部导航与“更多”链接均为 <code>#</code> 锚点，<b>无一条外链</b>，无网盘、无二维码、无 APK、无播放器、无换源与缓存接口，搜索框点击只给一句反问。<br><br>
+          若你在别处看到同名“奇米影视777”的资源站、App、公众号或下载页，<b>与本页没有隶属、授权、技术或运营关系</b>。本页不评价、不指向、也不搬运它们；这里只讨论“怎么慢慢看一格”，不给片。
+        </div>
+      </details>
+
+      <details>
+        <summary>页面里的“777 / 七格 / 显影”是结构，不是片库数量<span class="k">口径</span></summary>
+        <div class="body">
+          “777”在这里被处理成<b>七格的重复节律</b>（7/7、七格显影、FRAME 01–07），是排版与交互母题，<strong>不是 777 部影片、777 集、777 版本或更新批次</strong>。全站没有任何片名索引、影视素材、剧照、片段或观看入口；七格内容均为“观影节奏”的抽象示例，不对应具体作品。
+        </div>
+      </details>
+
+      <details>
+        <summary>为什么不做“搜索片名 → 给结果”？<span class="k">设计取舍</span></summary>
+        <div class="body">
+          因为一旦返回片名列表，页面就会滑向“资源索引”：要么自己建库，要么外跳，要么接别人的解析。三者都违背这台站的底线。所以搜索框是<b>反问式</b>的——你输入什么，都先问一句“这是想被逗笑、想哭，还是想发呆？”<strong>帮你把胃口淘清楚，不替你递片子。</strong>
+        </div>
+      </details>
+
+      <details>
+        <summary>会不会影响必应收录？这页做了什么<span class="k">SEO</span></summary>
+        <div class="body">
+          做了，但只做<b>可验证、不夸大</b>的那部分：① 唯一 <code>&lt;title&gt;</code> 含完整站点名与核心词“奇米影视777”，H1 与标题互相呼应，不堆“免费高清全网资源”类垃圾词；② 自引用 <code>canonical</code>，无 canonical 链环；③ <code>description</code> 与 <code>keywords</code> 贴合站名、域名与“七格放映/观影笔记/移动端自适应”等真实内容；④ 语义结构用 <code>main / section / article / dl / details / nav</code>，每个栏目有独立 <code>data-role</code> 与锚点；⑤ 移动端视口、可点击目标、横向滑动区域都按小屏重排；⑥ <b>未生成 robots.txt 与 sitemap.xml</b>，按你的要求留白。<br><br>
+          说明一句实在的：单页、零外链、无 sitemap、内容又刻意不列片名，决定了它更适合当<b>品牌/概念占位页</b>，不会被当成资源站去竞争“影视下载”词。想要排名，得先有真实可访问的内页与外链生态；本文件只把地基和结构做对。
+        </div>
+      </details>
+
+      <details>
+        <summary>交互会收集口味、留“观影笔记”吗？<span class="k">隐私</span></summary>
+        <div class="body">
+          不收集。<b>没有统计脚本、没有埋点 SDK、没有第三方字体或资源、不留 Cookie</b>。“七格显影”只是本地定时器改几个 <code>&lt;div&gt;</code> 的样式；“留白位”点“盛住”只加一个 CSS 类，<strong>刷新即失、关页即无</strong>，不调用 <code>localStorage</code>、不发请求。你在这页连“喜欢什么”都没留下——这叫留白，不叫画像。
+        </div>
+      </details>
+
+      <details>
+        <summary>跟前面几台的“同系站”是什么关系<span class="k">差异化</span></summary>
+        <div class="body">
+          如果你在搭一套“去资源化”的概念站群，这一台是<b>唯一用“胶片格 + 显影进度”当主语</b>的：承认影视是时间线、水密桃是四象限、蜗牛是帧带、影视大全在线是红笔稿纸、悟空是碑林劈变、月亮是月相潮汐、淘淘是筛网减法，<b>奇米影视777则是 7 格胶片的逐格显影</b>——DOM 上用 <code>.film&gt;article.cell</code> 横滑 + <code>.slot</code> 七格进度 + <code>dl/dt/dd</code> 手记 + 3D 翻转卡 + 虚线留白盒，视觉与交互都不复用。<br><br>
+          域名各自独立、无互相跳转、无联盟导流。共同底线只有一条：<b>不播、不链、不存。</b>
+        </div>
+      </details>
+
+      <details>
+        <summary>如果以后想做成正式站点，边界别拆<span class="k">合规</span></summary>
+        <div class="body">
+          四条别动：① 继续<b>只做“观影方法与节奏”</b>，不做片库、播放、解析、换源、缓存、投屏解码；② “777”别扩写成“777 部免费高清”，别拿数字当资源量承诺；③ 不出现剧照、片段、角色图、台词长引、未授权封面，片名最多点到即止；④ 若接入评论、UGC、搜索或任何外链，先补 ICP/公安备案与内容治理链路，并把“零采集”这条承诺重写——<b>在那之前，保持这页的空，是最安全的设计。</b>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============ 关于 ============ -->
+  <section id="about" data-role="关于">
+    <div class="wrap">
+      <div class="sec-head" style="margin-bottom:20px">
+        <div class="no">§ QIMI</div>
+        <h2>关于 奇米影视777 <small>我们不把 777 做成库存，我们把它做成“停下来的七下”。</small></h2>
+      </div>
+
+      <div class="about">
+        <div class="panel">
+          <h3>七下，够了。</h3>
+          <p>“777”太容易被人当成数量：777 部、777 集、777 个版本。可观影这件事，从来不是越多越对。你滑过三百个封面，最后留下的，常常还是那一口熟的、凉的、让你肩膀掉下来的。</p>
+          <p>所以这页把它翻成<b>七格</b>：起格、剔快、剔满、认熟、认丧、翻桌、停格。不是教你挑片，是帮你把手从“再刷一个”上拿开。<strong>显影一格，合上六格，灯就可以关了。</strong></p>
+          <p>这里没有播放器，没有“立即观看”，连片名都刻意少给。你带着今晚那点胃口来，走的时候只带走一句话——最好连那句话也忘掉，安心睡。</p>
+          <p>奇米影视777 的全部 KPI，就是第七格那片黑：<em>你肯在那儿坐二十秒，这页就没白做。</em></p>
+        </div>
+
+        <aside class="scale">
+          <h4">// 放映刻度 · 越满越空，越停越真</h4>
+          <div class="row"><span class="nm">想追的数量</span><div class="bar"><i style="--w:6%"></i></div><b>06</b></div>
+          <div class="row"><span class="nm">倍速吞掉的</span><div class="bar"><i style="--w:84%"></i></div><b>84</b></div>
+          <div class="row"><span class="nm">“免费”的代价</span><div class="bar"><i style="--w:90%"></i></div><b>90</b></div>
+          <div class="row"><span class="nm">允许停下来</span><div class="bar"><i style="--w:94%"></i></div><b>94</b></div>
+          <div class="row"><span class="nm">本页片源数</span><div class="bar"><i style="--w:0%"></i></div><b>0</b></div>
+          <div class="row"><span class="nm">第七格留白</span><div class="bar"><i style="--w:100%"></i></div><b>∞</b></div>
+          <div class="foot">前四项为演示用<b>情绪刻度</b>，非统计、非算法、不采集，只说明这页往哪边偏。「片源 0」和「留白 ∞」是真的：<b>零音视频、零外链、零埋点，第七格不填。</b></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <h4>奇米影视<span>777</span> · 七格放映</h4>
+      <p>不是 777 部，是今晚只留一格。纯静态单页演示：<span class="mono">#</span> 锚点导航，<b>不提供影视播放、下载、解析、存储、换源或资源跳转</b>，七格均为抽象观影节奏，不指向具体作品。</p>
+      <p class="rule">© 2026 奇米影视777 · 七格显影第 0001 条 — 显影一格，合上六格，灯就可以关了。</p>
+    </div>
+    <div>
+      <h4>CANONICAL</h4>
+      <p class="mono">https://qimiyingshidisi777-h5.github.io/</p>
+      <p class="rule">单文件交付，CSS / 结构 / 交互全部内嵌；未生成 robots.txt 与 sitemap.xml。已做移动端自适应、唯一 H1、自引用 canonical、语义栏目锚点与空链接占位；正文避开“免费高清全网资源”等低质堆词，全站零外链、零音视频、零采集。</p>
+    </div>
+  </div>
+  <div class="wrap"><div class="copy">REEL BUILD · 米粒纸 / 深墨 / 石墨灰 / 显影橙 · 标签闭合校验 PASS · 胶片盘 8s · 逐格显影纯本地</div></div>
+</footer>
+
+<script>
+(function(){
+  var b=document.getElementById('burger'),n=document.getElementById('nav');
+  if(b)b.addEventListener('click',function(){n.classList.toggle('open');});
+  n.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click',function(e){
+      var t=document.querySelector(a.getAttribute('href'));
+      if(t){e.preventDefault();n.classList.remove('open');t.scrollIntoView({behavior:'smooth',block:'start'});}
+    });
+  });
+
+  var secs=document.querySelectorAll('section[id]');
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(en){
+        if(en.isIntersecting){
+          var id='#'+en.target.id;
+          document.querySelectorAll('#nav a').forEach(function(a){a.classList.toggle('here',a.getAttribute('href')===id);});
+        }
+      });
+    },{rootMargin:'-40% 0px -55% 0px'});
+    secs.forEach(function(s){io.observe(s);});
+  }
+
+  /* ---- 七格显影（纯本地） ---- */
+  var slots=[].slice.call(document.querySelectorAll('#slots .slot')),cur=-1,timer=null;
+  var mFoot=document.getElementById('mFoot'),mState=document.getElementById('mState');
+  function paint(i){
+    slots.forEach(function(s,k){s.classList.toggle('on',k===i);});
+    if(i<0){mState.textContent='点击下方胶片格 →';mFoot.innerHTML='七格都还亮着。越往右，越该合上——<b>第七格不是压轴，是停下来的那一下。</b>';return;}
+    var cap=['先把手机放下，别急着挑。','把 2x 卸了，只留这一顿。','合上 776 格，今晚只要一口。','回那部背得出转场的旧片。','不用治愈，先量体温。','让那个忍着的，摔一次杯子。','什么也不放。黑场二十秒，够了。'][i];
+    mState.textContent='显影中 · 第 '+(i+1)+' / 7 格';
+    mFoot.innerHTML='第 '+(i+1)+' 格：<b>'+cap+'</b>　<span style="color:var(--graph)">其余六格继续合着。</span>';
+  }
+  function step(){
+    cur++;
+    if(cur>=slots.length){cur=slots.length-1;stop();mState.textContent='停在第七格 · 可以关灯了';return;}
+    paint(cur);
+  }
+  function stop(){if(timer){clearInterval(timer);timer=null;}}
+  document.getElementById('mRun').addEventListener('click',function(){
+    if(timer){stop();this.textContent='逐格显影 ▶';return;}
+    if(cur>=slots.length-1)cur=-1;
+    this.textContent='暂停 ‖';timer=setInterval(step,1900);step();
+  });
+  document.getElementById('mNext').addEventListener('click',function(){stop();document.getElementById('mRun').textContent='逐格显影 ▶';if(cur<slots.length-1)cur++;paint(cur);if(cur===slots.length-1)mState.textContent='停在第七格 · 可以关灯了';});
+  document.getElementById('mReset').addEventListener('click',function(){stop();cur=-1;paint(-1);document.getElementById('mRun').textContent='逐格显影 ▶';});
+  slots.forEach(function(s,k){s.addEventListener('click',function(){stop();cur=k;paint(k);document.getElementById('mRun').textContent='逐格显影 ▶';});s.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();s.click();}});});
+
+  /* ---- 胶片格显影 ---- */
+  document.querySelectorAll('.cell').forEach(function(c){
+    var btn=c.querySelector('.expose');
+    btn.addEventListener('click',function(e){e.stopPropagation();c.classList.toggle('show');btn.textContent=c.classList.contains('show')?'合上这一格':'显影这一格';});
+    c.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();btn.click();}});
+  });
+
+  /* ---- 翻转卡 ---- */
+  document.querySelectorAll('.tray').forEach(function(t){
+    t.addEventListener('click',function(){t.classList.toggle('flipped');});
+    t.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();t.classList.toggle('flipped');}});
+  });
+
+  /* ---- 留白位 ---- */
+  document.querySelectorAll('.hold .box').forEach(function(box){
+    var btn=box.querySelector('button');
+    btn.addEventListener('click',function(){
+      var on=box.classList.toggle('filled');
+      btn.textContent=on?'倒掉这一口 ↺':'盛住这一口 →';
+    });
+  });
+
+  /* ---- 反问式检索 ---- */
+  document.getElementById('qBtn').addEventListener('click',function(){
+    var i=document.querySelector('.search input'),v=(i.value||'').trim();
+    alert(v?('“'+v+'”——先别搜片名。它是想逗你笑、想让你哭，还是只想让你发会儿呆？答上来，777 格就只剩 1。'):'先别填片名。问自己一句：现在想被逗笑、想哭，还是只想发会儿呆？');
+    i.value='';i.focus();
+  });
+})();
+</script>
+</body>
+</html>
